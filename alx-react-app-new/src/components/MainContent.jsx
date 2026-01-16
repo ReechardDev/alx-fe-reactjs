@@ -8,7 +8,7 @@ const MainContent = () => {
       }}
     >
       <p style={{ fontSize: "16px", lineHeight: "1.6" }}>
-        I enjoy learning front-end development and building React applications.
+        I love to visit New York, Paris, and Tokyo.
       </p>
     </main>
   );
