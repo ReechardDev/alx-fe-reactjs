@@ -11,6 +11,10 @@ const RecipeDetails = () => {
     state.recipes.find((r) => r.id === recipeId)
   );
 
+  const favorites = useRecipeStore((state) => state.favorites);
+  const addFavorite = useRecipeStore((state) => state.addFavorite);
+  const removeFavorite = useRecipeStore((state) => state.removeFavorite);
+
   if (!recipe) {
     return (
       <div>
@@ -20,11 +24,27 @@ const RecipeDetails = () => {
     );
   }
 
+  const isFavorite = favorites.includes(recipe.id);
+
+  const handleFavoriteToggle = () => {
+    if (isFavorite) {
+      removeFavorite(recipe.id);
+    } else {
+      addFavorite(recipe.id);
+    }
+  };
+
   return (
     <div>
       <h1>{recipe.title}</h1>
       <p>{recipe.description}</p>
 
+      {/* Favorite toggle */}
+      <button onClick={handleFavoriteToggle}>
+        {isFavorite ? 'Remove Favorite' : 'Add to Favorites'}
+      </button>
+
+      {/* Edit + Delete */}
       <EditRecipeForm recipe={recipe} />
       <DeleteRecipeButton recipeId={recipe.id} />
     </div>

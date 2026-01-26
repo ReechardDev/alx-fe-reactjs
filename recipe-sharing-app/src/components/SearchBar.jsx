@@ -1,14 +1,8 @@
-import { useEffect } from 'react';
 import { useRecipeStore } from './recipeStore';
 
 const SearchBar = () => {
   const searchTerm = useRecipeStore((state) => state.searchTerm);
   const setSearchTerm = useRecipeStore((state) => state.setSearchTerm);
-  const filterRecipes = useRecipeStore((state) => state.filterRecipes);
-
-  useEffect(() => {
-    filterRecipes();
-  }, [searchTerm, filterRecipes]);
 
   return (
     <input

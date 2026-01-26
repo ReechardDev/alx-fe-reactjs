@@ -5,8 +5,19 @@ export const useRecipeStore = create((set) => ({
   searchTerm: '',
   filteredRecipes: [],
 
-  setSearchTerm: (term) => set({ searchTerm: term }),
+  favorites: [],
+  recommendations: [],
 
+  // Update search term AND recompute filtered results immediately
+  setSearchTerm: (term) =>
+    set((state) => ({
+      searchTerm: term,
+      filteredRecipes: state.recipes.filter((recipe) =>
+        recipe.title.toLowerCase().includes(term.toLowerCase())
+      ),
+    })),
+
+  // Keep this action for ALX requirement, but it's now optional to call
   filterRecipes: () =>
     set((state) => ({
       filteredRecipes: state.recipes.filter((recipe) =>
@@ -17,19 +28,24 @@ export const useRecipeStore = create((set) => ({
   addRecipe: (newRecipe) =>
     set((state) => {
       const updatedRecipes = [...state.recipes, newRecipe];
-      const updatedFiltered = updatedRecipes.filter((recipe) =>
-        recipe.title.toLowerCase().includes(state.searchTerm.toLowerCase())
-      );
-      return { recipes: updatedRecipes, filteredRecipes: updatedFiltered };
+      return {
+        recipes: updatedRecipes,
+        filteredRecipes: updatedRecipes.filter((recipe) =>
+          recipe.title.toLowerCase().includes(state.searchTerm.toLowerCase())
+        ),
+      };
     }),
 
   deleteRecipe: (id) =>
     set((state) => {
       const updatedRecipes = state.recipes.filter((recipe) => recipe.id !== id);
-      const updatedFiltered = updatedRecipes.filter((recipe) =>
-        recipe.title.toLowerCase().includes(state.searchTerm.toLowerCase())
-      );
-      return { recipes: updatedRecipes, filteredRecipes: updatedFiltered };
+      return {
+        recipes: updatedRecipes,
+        filteredRecipes: updatedRecipes.filter((recipe) =>
+          recipe.title.toLowerCase().includes(state.searchTerm.toLowerCase())
+        ),
+        favorites: state.favorites.filter((favId) => favId !== id),
+      };
     }),
 
   updateRecipe: (updatedRecipe) =>
@@ -37,10 +53,12 @@ export const useRecipeStore = create((set) => ({
       const updatedRecipes = state.recipes.map((recipe) =>
         recipe.id === updatedRecipe.id ? updatedRecipe : recipe
       );
-      const updatedFiltered = updatedRecipes.filter((recipe) =>
-        recipe.title.toLowerCase().includes(state.searchTerm.toLowerCase())
-      );
-      return { recipes: updatedRecipes, filteredRecipes: updatedFiltered };
+      return {
+        recipes: updatedRecipes,
+        filteredRecipes: updatedRecipes.filter((recipe) =>
+          recipe.title.toLowerCase().includes(state.searchTerm.toLowerCase())
+        ),
+      };
     }),
 
   setRecipes: (recipes) =>
@@ -50,4 +68,24 @@ export const useRecipeStore = create((set) => ({
         recipe.title.toLowerCase().includes(state.searchTerm.toLowerCase())
       ),
     })),
+
+  addFavorite: (recipeId) =>
+    set((state) => ({
+      favorites: state.favorites.includes(recipeId)
+        ? state.favorites
+        : [...state.favorites, recipeId],
+    })),
+
+  removeFavorite: (recipeId) =>
+    set((state) => ({
+      favorites: state.favorites.filter((id) => id !== recipeId),
+    })),
+
+  generateRecommendations: () =>
+    set((state) => {
+      const recommended = state.recipes.filter(
+        (recipe) => !state.favorites.includes(recipe.id) && Math.random() > 0.5
+      );
+      return { recommendations: recommended };
+    }),
 }));
